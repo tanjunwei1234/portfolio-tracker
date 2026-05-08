@@ -1,0 +1,30 @@
+{
+  "NVDA": {
+    "shares": 2,
+    "avg_cost": 198.878
+  },
+  "AAPL": {
+    "shares": 4,
+    "avg_cost": 253.562
+  },
+  "MSFT": {
+    "shares": 4,
+    "avg_cost": 420.807
+  },
+  "GOOGL": {
+    "shares": 1,
+    "avg_cost": 338.44
+  },
+  "QQQ": {
+    "shares": 1,
+    "avg_cost": 594.2
+  },
+  "VOO": {
+    "shares": 1,
+    "avg_cost": 613.62
+  },
+  "O39.SI": {
+    "shares": 100,
+    "avg_cost": 20.55
+  }
+}

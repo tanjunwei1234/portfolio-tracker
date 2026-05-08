@@ -1,14 +1,28 @@
 import yfinance as yf
+import json
+import os
 from datetime import datetime
 
-portfolio = {
-    "NVDA": {"shares": 2, "avg_cost": 198.878},
-    "AAPL": {"shares": 4, "avg_cost": 253.562},
-    "MSFT": {"shares": 4, "avg_cost": 420.807},
-    "GOOGL": {"shares": 1, "avg_cost": 338.44},
-    "QQQ":  {"shares": 1, "avg_cost": 594.20},
-    "VOO":  {"shares": 1, "avg_cost": 613.62},
-}
+SAVE_FILE = "portfolio.json"
+
+def load_portfolio():
+    if os.path.exists(SAVE_FILE):
+        with open(SAVE_FILE, "r") as f:
+            return json.load(f)
+    return {
+        "NVDA":  {"shares": 2,   "avg_cost": 198.878},
+        "AAPL":  {"shares": 4,   "avg_cost": 253.562},
+        "MSFT":  {"shares": 4,   "avg_cost": 420.807},
+        "GOOGL": {"shares": 1,   "avg_cost": 338.44},
+        "QQQ":   {"shares": 1,   "avg_cost": 594.20},
+        "VOO":   {"shares": 1,   "avg_cost": 613.62},
+        "O39.SI":{"shares": 100, "avg_cost": 20.55},
+    }
+
+def save_portfolio(portfolio):
+    with open(SAVE_FILE, "w") as f:
+        json.dump(portfolio, f, indent=2)
+    print("✅ Portfolio saved.")
 
 def get_stock_data(ticker):
     stock = yf.Ticker(ticker)
@@ -25,7 +39,7 @@ def get_stock_data(ticker):
         "name": info.get("longName", ticker),
     }
 
-def show_portfolio():
+def show_portfolio(portfolio):
     print(f"\n📊 Portfolio — {datetime.now().strftime('%d %b %Y, %H:%M')}")
     print(f"\n{'Ticker':<8} {'Bought':>8} {'Shares':>7} {'Price':>9} {'Day %':>7} {'Total %':>8} {'P&L':>10}")
     print("─" * 65)
@@ -81,7 +95,7 @@ def lookup_stock():
     except:
         print("Ticker not found. Try again.")
 
-def add_stock():
+def add_stock(portfolio):
     ticker = input("\nEnter ticker to add (e.g. NVDA): ").upper()
     try:
         data = get_stock_data(ticker)
@@ -92,10 +106,11 @@ def add_stock():
         avg_cost = float(input(f"Average price paid per share? $"))
         portfolio[ticker] = {"shares": shares, "avg_cost": avg_cost}
         print(f"✅ Added {shares} shares of {ticker} at ${avg_cost:.2f}")
+        save_portfolio(portfolio)
     except:
         print("Something went wrong. Check the ticker and try again.")
 
-def remove_stock():
+def remove_stock(portfolio):
     if not portfolio:
         print("\nPortfolio is empty.")
         return
@@ -104,29 +119,34 @@ def remove_stock():
     if ticker in portfolio:
         del portfolio[ticker]
         print(f"✅ Removed {ticker} from portfolio.")
+        save_portfolio(portfolio)
     else:
         print(f"{ticker} not found in portfolio.")
 
 def main():
+    portfolio = load_portfolio()
+    print("📂 Portfolio loaded.")
+
     while True:
         print("\n─────────────────────")
         print("1  View my portfolio")
         print("2  Look up any stock")
         print("3  Add a stock")
         print("4  Remove a stock")
-        print("5  Quit")
+        print("5  Save & quit")
         print("─────────────────────")
         choice = input("Choose: ")
 
         if choice == "1":
-            show_portfolio()
+            show_portfolio(portfolio)
         elif choice == "2":
             lookup_stock()
         elif choice == "3":
-            add_stock()
+            add_stock(portfolio)
         elif choice == "4":
-            remove_stock()
+            remove_stock(portfolio)
         elif choice == "5":
+            save_portfolio(portfolio)
             print("Bye!")
             break
         else:
